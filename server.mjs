@@ -11,7 +11,7 @@ const root=path.dirname(fileURLToPath(import.meta.url));
 const port=Number(process.env.PORT||10000);
 const origin=process.env.PUBLIC_ORIGIN||(process.env.RENDER_EXTERNAL_HOSTNAME?`https://${process.env.RENDER_EXTERNAL_HOSTNAME}`:`http://127.0.0.1:${port}`);
 const password=process.env.APP_PASSWORD;
-if(!password||password.length<16)throw Error('Set APP_PASSWORD to a secret of at least 16 characters before starting.');
+if(!password||password.length<12)throw Error('Set APP_PASSWORD to a secret of at least 12 characters before starting.');
 const expected=createHash('sha256').update('video:'+password).digest();
 function authorized(req){try{const value=req.headers.authorization||'';if(!value.startsWith('Basic '))return false;return timingSafeEqual(expected,createHash('sha256').update(Buffer.from(value.slice(6),'base64')).digest());}catch{return false;}}
 const token=randomBytes(24).toString('hex'), media=new Map();let active=0;
