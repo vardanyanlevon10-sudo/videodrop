@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: videodrop
+    runtime: docker
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: APP_PASSWORD
+        generateValue: true
