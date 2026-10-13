@@ -35,10 +35,11 @@ const server=http.createServer(async(req,res)=>{
   if(req.method==='POST'&&url.pathname==='/api/extract'){
    if(req.headers['x-api-token']!==token|| (req.headers.origin&&req.headers.origin!==origin))return json(res,403,{error:'Reload this page and try again.'});
    let body='';for await(const chunk of req){body+=chunk;if(body.length>4096)return json(res,413,{error:'The link is too long.'});}
-   let input;try{input=new URL(JSON.parse(body).url);}catch{return json(res,400,{error:'Paste a valid X or Twitter post link.'});}
-   if(input.protocol!=='https:'||input.username||input.password||input.port||!['x.com','www.x.com','twitter.com','www.twitter.com','mobile.twitter.com'].includes(input.hostname)||!/^\/(?:[A-Za-z0-9_]+\/status|i\/web\/status)\/\d+\/?$/.test(input.pathname))return json(res,400,{error:'Use an X or Twitter post URL, such as https://x.com/username/status/123.'});
+   let input;try{let value=String(JSON.parse(body).url||'').trim();value=value.match(/https?:\/\/[^\s<>]+/i)?.[0]||value;if(!/^https?:\/\//i.test(value))value='https://'+value;input=new URL(value);}catch{return json(res,400,{error:'Paste a valid X or Twitter post link.'});}
+   const post=input.pathname.match(/^\/(?:[A-Za-z0-9_]+\/status|i\/(?:web\/)?status)\/(\d+)(?:\/(?:video|photo)\/\d+)?\/?$/i);
+   if(!['https:','http:'].includes(input.protocol)||input.username||input.password||input.port||!['x.com','www.x.com','mobile.x.com','m.x.com','twitter.com','www.twitter.com','mobile.twitter.com','m.twitter.com'].includes(input.hostname)||!post)return json(res,400,{error:'This is not a post link. In X, open the video post, tap Share, then Copy link. Paste that link here.'});
    if(active>=2)return json(res,429,{error:'Another video is loading. Please try again shortly.'});
-   active++;let info;try{info=await extract('https://x.com'+input.pathname);}finally{active--;}
+   active++;let info;try{info=await extract('https://x.com/i/status/'+post[1]);}finally{active--;}
    for(const [key,value] of media)if(value.expires<Date.now())media.delete(key);
    const formats=(info.formats||[]).filter(f=>{try{return f.ext==='mp4'&&f.protocol==='https'&&new URL(f.url).hostname==='video.twimg.com';}catch{return false;}}).sort((a,b)=>(b.height||0)-(a.height||0)||(b.tbr||0)-(a.tbr||0));
    const seen=new Set(),choices=[];
@@ -57,3 +58,4 @@ const server=http.createServer(async(req,res)=>{
  }catch(error){if(!res.headersSent&&!res.destroyed)json(res,500,{error:error.message||'Something went wrong. Please retry.'});else res.destroy();}
 });
 server.listen(port,'0.0.0.0',()=>console.log(`VideoDrop is ready at ${origin}`));
+
