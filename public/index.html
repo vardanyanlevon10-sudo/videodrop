@@ -1,0 +1,12 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="A simple, private tool to preview and save direct video links."><title>VideoDrop — Save the good stuff</title><link rel="stylesheet" href="style.css"></head><body>
+<header><a class="brand" href="./"><span class="logo">↓</span> VideoDrop</a><span class="header-note"><i></i> Your videos, anywhere.</span></header>
+<main><div class="eyebrow">THE SIMPLE VIDEO DOWNLOADER</div><h1>Good video.<br><span>Yours to keep.</span></h1><p class="intro">Drop in an X post link. Preview it. Save it.<br>Your favorite clips, one link away.</p>
+<section class="card" aria-label="Video downloader"><form id="form"><label for="url">Video link</label><div class="input-row"><input id="url" name="url" type="url" placeholder="https://x.com/username/status/123" autocomplete="off" required><button class="primary" id="preview" type="submit">Find video <span>↗</span></button></div><div class="hint">POST LINKS <span>X / Twitter</span><span>MP4</span></div></form>
+<div id="message" role="status" aria-live="polite"></div>
+<div id="result" hidden><div class="video-frame"><video id="video" controls playsinline preload="metadata"></video></div><div class="file-row"><div><div class="label">READY TO SAVE</div><strong id="filename"></strong><div id="details"></div></div><button id="download" class="primary" type="button">Download ↓</button></div><div id="progress-area" hidden><progress id="progress" max="100"></progress><div class="progress-row"><span id="progress-label"></span><button id="cancel" class="text-button">Cancel</button></div></div><a id="fallback" target="_blank" rel="noopener noreferrer" hidden>Open video in a new tab ↗</a></div>
+</section>
+<div class="features"><div><span>01</span><strong>Paste a link</strong><p>A public X or Twitter video post.</p></div><div><span>02</span><strong>Take a look</strong><p>Preview before you download.</p></div><div><span>03</span><strong>Make it local</strong><p>Save the original video file.</p></div></div>
+<div class="note"><span>ⓘ</span><p>Works with public X / Twitter video posts. Choose a quality, then save the MP4. Private posts and posts requiring login are not supported.</p></div></main><footer><span>Less friction. More watching.</span><span>Your private video downloader · Download only videos you’re allowed to save</span></footer><script src="app.js"></script></body></html>
+
+
