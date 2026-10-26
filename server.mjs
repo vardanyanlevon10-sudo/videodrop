@@ -52,7 +52,7 @@ const server=http.createServer(async(req,res)=>{
    const item=media.get(url.pathname.slice(7));if(!item||item.expires<Date.now())return json(res,410,{error:'Link expired. Find the video again.'});
    const abort=new AbortController();res.on('close',()=>abort.abort());const headers={...item.headers};if(req.headers.range)headers.Range=req.headers.range;
    const response=await fetch(item.url,{headers,signal:abort.signal,redirect:'error'});if(!response.ok&&response.status!==206)return json(res,502,{error:'The platform could not deliver the video. Find it again and retry.'});
-   const output={'Content-Type':'video/mp4','Cache-Control':'private, no-store','X-Content-Type-Options':'nosniff'};for(const h of ['content-length','content-range','accept-ranges'])if(response.headers.has(h))output[h]=response.headers.get(h);if(url.searchParams.has('download'))output['Content-Disposition']=`attachment; filename="${item.name}"`;
+   const output={'Content-Type':'video/mp4','Cache-Control':'private, no-store','X-Content-Type-Options':'nosniff'};for(const h of ['content-length','content-range','accept-ranges'])if(response.headers.has(h))output[h]=response.headers.get(h);if(url.searchParams.has('download')){const stamp=url.searchParams.get('timestamp');const timestamp=/^\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2}$/.test(stamp||'')?stamp:new Date().toISOString().replace('T','_').replace(/:/g,'-').slice(0,19);output['Content-Disposition']=`attachment; filename="${item.name.replace(/\.mp4$/i,'')}_${timestamp}.mp4"`;}
    res.writeHead(response.status,output);await pipeline(Readable.fromWeb(response.body),res);return;
   }
   json(res,404,{error:'Not found'});
